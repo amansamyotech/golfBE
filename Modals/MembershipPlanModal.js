@@ -18,10 +18,10 @@ const membershipplanSchema = new mongoose.Schema(
       type: Number,
       required: true,
     },
-    planImage: {
-      type: String,
-      required: true,
-    },
+    // planImage: {
+    //   type: String,
+    //   required: true,
+    // },
   },
   {
     timestamps: true,

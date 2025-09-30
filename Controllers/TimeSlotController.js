@@ -22,3 +22,24 @@ export const deleteTimeSlotController = async (req, res) => {
   const result = await timeSlotService.deleteSlot(id);
   return sendResponse(res, result);
 };
+
+export const getSlotsByStartAndCourse = async (req, res) => {
+  const { startDate, endDate, courseId } = req.query;
+  const result = await timeSlotService.getSlotsByStartAndCourse(
+    startDate,
+    endDate,
+    courseId
+  );
+  return sendResponse(res, result);
+};
+
+export const getAllIndividualSlots = async (req, res) => {
+  const result = await timeSlotService.getAllIndividualSlots();
+  return sendResponse(res, result);
+}
+export const getIndividualSlotsByDate = async (req, res) => {
+  const { date } = req.params; 
+   const result = await timeSlotService.getIndividualSlotsByDate(date);
+  return sendResponse(res, result);
+
+}

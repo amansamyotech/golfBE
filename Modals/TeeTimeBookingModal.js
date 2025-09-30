@@ -29,6 +29,12 @@ const bookingSchema = new mongoose.Schema(
     specialInfo: {
       type: String,
     },
+    paymentMode: {
+      type: String,
+    },
+    amount: {
+      type: Number,
+    },
     status: {
       type: String,
       enum: ["ACTIVE", "INACTIVE"],

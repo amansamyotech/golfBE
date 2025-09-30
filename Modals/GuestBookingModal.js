@@ -2,66 +2,59 @@ import mongoose from "mongoose";
 
 const guestBookingSchema = new mongoose.Schema(
   {
-    name: {
-      type: String,
-      // required: true,
-    },
-    email: {
-      type: String,
-      // required: true,
-    },
-    phone: {
-      type: String,
-      // required: true,
-    },
-    govId: {
-      type: String,
-      // required: true,
+    customerId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Customer",
+      required: true,
     },
     course: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Course",
       required: true,
     },
-    dateTime: {
-      type: Date,
+    slotIds: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "IndividualSlot",
+      }
+    ],
+    startTime: {
+      type: String,
+    },
+    endTime: {
+      type: String,
     },
     groupSize: {
       type: Number,
-      required: true,
     },
     caddyCart: {
       type: Boolean,
       default: false,
     },
-    amount: {
-      type: Number,
-    },
-    paymentMode: {
-      type: String,
-      enum: ["card", "upi", "cash"],
-      default: "card",
-    },
     acceptRules: {
       type: Boolean,
-      required: false,
     },
     acknowledgePolicy: {
       type: Boolean,
-      required: false,
-    },
-    memberId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Member",
     },
     specialInfo: {
       type: String,
     },
-    startDateTime: {
-      type: Date,
+    paymentMode: {
+      type: String,
     },
-    endDateTime: {
-      type: Date,
+    amount: {
+      type: Number,
+    },
+    bookingStatus: {
+      type: String,
+      enum: ["pending", "confirmed", "completed", "canceled"],
+      default: "pending",
+    },
+    bookingType: {
+      type: String,
+      enum: ["daily", "weekly", "membership"],
+      default: "daily",
     },
   },
   { timestamps: true }

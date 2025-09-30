@@ -37,7 +37,6 @@ export const sendMail = async (mailOption) => {
 
   try {
     const result = await ses.sendEmail(params).promise();
-    console.log("Email sent successfully:", result);
     return result;
   } catch (err) {
     console.error("Failed to send email:", err);

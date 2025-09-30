@@ -46,7 +46,11 @@ export const getAllGuestBookings = async () => {
 
 export const getGuestBookingById = async (id) => {
   try {
-    const booking = await BookingModel.findById(id).populate("course", "name");
+    const booking = await BookingModel.findById(id)
+      .populate("course", "name")
+      .populate("customerId", "name email phone status");
+
+
     if (!booking) {
       return createResponse(statusCodes.NOT_FOUND, notFount.GUEST);
     }

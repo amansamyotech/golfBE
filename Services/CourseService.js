@@ -3,7 +3,7 @@ import {
   AddedFailedMessages,
   AddedsuccessMessages,
   UpdatedsuccessMessages,
-  notFount,
+  notFound,
   DeletedsuccessMessages,
   requiredMessage,
   errorMessages,
@@ -50,7 +50,7 @@ export const updateCourse = async (id, updateData) => {
     });
 
     if (!updatedCourse) {
-      return createResponse(statusCodes.NOT_FOUND, notFount.COURSE);
+      return createResponse(statusCodes.NOT_FOUND, notFound.COURSE);
     }
 
     return createResponse(
@@ -72,7 +72,7 @@ export const deleteCourse = async (id) => {
     const deletedCourse = await CourseModel.findByIdAndDelete(id);
 
     if (!deletedCourse) {
-      return createResponse(statusCodes.NOT_FOUND, notFount.COURSE);
+      return createResponse(statusCodes.NOT_FOUND, notFound.COURSE);
     }
 
     return createResponse(

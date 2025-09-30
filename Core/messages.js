@@ -77,6 +77,8 @@ export const AddedsuccessMessages = {
   GUEST: "Guest Booking created successfully",
   EMPLOYEE: "Employee created successfully",
   SLOT: "Time slot created successfully",
+  CUSTOMER: "Customer created successfully",
+  BOOKING: "Booking created successfully",
 };
 
 export const UpdatedsuccessMessages = {
@@ -86,6 +88,17 @@ export const UpdatedsuccessMessages = {
   GUEST: "Guest Booking updated successfully",
   EMPLOYEE: "Employee updated successfully",
   SLOT: "Time slot updated successfully",
+  CUSTOMER: "Customer updated successfully",
+};
+
+export const notFound = {
+  COURSE: "Course not found",
+  PLAN: "Membership plan not found",
+  MEMBER: "Member not found",
+  GUEST: "Guest Booking not found",
+  EMPLOYEE: "Employee not found",
+  SLOT: "Time slot not found",
+  CUSTOMER: "Customer not found",
 };
 
 export const notFount = {
@@ -95,15 +108,18 @@ export const notFount = {
   GUEST: "Guest Booking not found",
   EMPLOYEE: "Employee not found",
   SLOT: "Time slot not found",
+  CUSTOMER: "Customer not found",
+  BOOKING: "Booking not found",
 };
 
 export const DeletedsuccessMessages = {
   COURSE: "Course deleted successfully",
   PLAN: "Membership plan deleted successfully",
   MEMBER: "Member deleted successfully",
-  GUEST: "Guest deleted successfully",
+  GUEST: "Booking cancelled successfully",
   EMPLOYEE: "Employee deleted successfully",
   SLOT: "Time slot deleted successfully",
+  CUSTOMER: "Customer deleted successfully",
 };
 
 export const AddedFailedMessages = {

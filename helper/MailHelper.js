@@ -15,9 +15,7 @@ const transporter = nodemailer.createTransport({
 export const sendMail = async (mailOptions) => {
   mailOptions.from = config.email.from;
   try {
-    console.log("mailOption", mailOptions);
     const info = await transporter.sendMail(mailOptions);
-    console.log("Email sent: " + info.response); // Log the email response if successful
     return info;
   } catch (error) {
     console.error("Error sending email: ", error); // Log error if email fails

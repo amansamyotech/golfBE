@@ -11,9 +11,9 @@ export const createPlanController = async (req, res) => {
     numberOfDays,
   };
 
-  if (req.files && req.files.planImage && req.files.planImage[0]) {
-    data.planImage = `/images/${req.files.planImage[0].filename}`;
-  }
+  // if (req.files && req.files.planImage && req.files.planImage[0]) {
+  //   data.planImage = `/images/${req.files.planImage[0].filename}`;
+  // }
 
   const result = await planService.createPlan(data);
   return sendResponse(res, result);
@@ -41,9 +41,9 @@ export const updatePlanController = async (req, res) => {
     numberOfDays,
   };
 
-  if (req.files && req.files.planImage && req.files.planImage[0]) {
-    data.planImage = `/images/${req.files.planImage[0].filename}`;
-  }
+  // if (req.files && req.files.planImage && req.files.planImage[0]) {
+  //   data.planImage = `/images/${req.files.planImage[0].filename}`;
+  // }
   const result = await planService.updatePlan(id, data);
   return sendResponse(res, result);
 };

@@ -12,6 +12,7 @@ import staffRouter from "./Routes/StaffRoute.js";
 import timeSlotRouter from "./Routes/TimeSlotRoute.js";
 
 import bookingRouter from "./Routes/TeeTimeBookingRoute.js";
+import customerRouter from "./Routes/CustomerRoute.js";
 
 dotenv.config();
 connectDB();
@@ -34,6 +35,7 @@ app.use("/api/staff", staffRouter);
 
 app.use("/api/booking", bookingRouter);
 app.use("/api/time-slot", timeSlotRouter);
+app.use("/api/customer", customerRouter);
 
 // Start Server
 app.listen(PORT, () => {
