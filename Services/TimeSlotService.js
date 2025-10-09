@@ -73,10 +73,7 @@ const generateSlots = (data) => {
 };
 
 export const createSlot = async (data) => {
-
-
   try {
-    // calculate total slot time in API
     const totalSlotTime =
       Number(data.slot_time_hours || 0) * 60 +
       Number(data.slot_time_minutes || 0);
@@ -95,14 +92,16 @@ export const createSlot = async (data) => {
     });
     await newSlot.save();
 
-
-
     const slots = generateSlots({
       ...data,
       total_slot_time: data.totalSlotTime,
     });
 
-    await IndividualSlotModel.insertMany(slots);
+    // await IndividualSlotModel.insertMany(slots);
+
+    await IndividualSlotModel.insertMany(
+      slots.map(slot => ({ ...slot, timeSlotId: newSlot._id }))
+    );
 
     return createResponse(
       statusCodes.CREATED,
@@ -206,8 +205,6 @@ export const getSlotsByStartAndCourse = async (startDate, endDate, courseId) => 
 };
 
 export const updateSlot = async (id, data) => {
-
-
   try {
     const existingSlotConfig = await TimeSlotModel.findById(id);
 
@@ -270,7 +267,7 @@ export const getAllIndividualSlots = async () => {
   }
 }
 
-export const getIndividualSlotsByDate = async (date) => {
+export const getIndividualSlotsByDate = async (date, courseId) => {
   try {
     if (!date) {
       return res
@@ -280,8 +277,10 @@ export const getIndividualSlotsByDate = async (date) => {
 
     // Use regex to match the date portion in `start`
     const slots = await IndividualSlotModel.find({
-      start: { $regex: `^${date}` } // matches start strings that begin with the given date
+      start: { $regex: `^${date}` },
+      course: courseId
     });
+
 
     return createResponse(statusCodes.OK, commonMessage.SUCCESS, slots);
 
@@ -293,6 +292,39 @@ export const getIndividualSlotsByDate = async (date) => {
     );
   }
 };
+
+export const getAllIndividualSlotsByTimeSlotId = async (id) => {
+  try {
+
+    const timeSlotId = await TimeSlotModel.findById(id);
+    if (!timeSlotId) {
+      return createResponse(statusCodes.NOT_FOUND, notFount.SLOT);
+    }
+
+    const slots = await IndividualSlotModel.find({
+      timeSlotId: timeSlotId
+    });
+    return createResponse(statusCodes.OK, commonMessage.SUCCESS, slots);
+  } catch (err) {
+    console.error("Error updating slot:", err);
+    return createResponse(statusCodes.INTERNAL_SERVER_ERROR, "Internal Server Error");
+  }
+}
+
+export const getAllIndividualSlotsByCourseId = async (id) => {
+  try {
+    const slots = await IndividualSlotModel.find({
+      course: id
+    });
+    return createResponse(statusCodes.OK, commonMessage.SUCCESS, slots);
+  } catch (err) {
+    console.error("Error updating slot:", err);
+    return createResponse(statusCodes.INTERNAL_SERVER_ERROR, "Internal Server Error");
+  }
+}
+
+
+
 
 
 

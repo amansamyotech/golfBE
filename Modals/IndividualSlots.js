@@ -22,6 +22,10 @@ const individualSlotSchema = new mongoose.Schema({
     type: Boolean,
     default: false
   },
+  timeSlotId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "TimeSlot",
+  },
   created_at: {
     type: Date,
     default: Date.now,

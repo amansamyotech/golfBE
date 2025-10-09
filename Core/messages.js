@@ -60,6 +60,8 @@ export const requiredMessage = {
   SHOP_ID: "Shop Id is required",
   POINTS_CONFIGURATION_ID: "Points Configuration Id is required",
   DELETE_REQUEST_ID: "Delete Request Id is required",
+  SLOT: "Slot Id is required",
+  BOOKING_ID: "Booking Id is required",
 };
 
 export const AlreadyExistMessage = {
@@ -120,6 +122,7 @@ export const DeletedsuccessMessages = {
   EMPLOYEE: "Employee deleted successfully",
   SLOT: "Time slot deleted successfully",
   CUSTOMER: "Customer deleted successfully",
+  BOOKING: "Booking Cancel successfully",
 };
 
 export const AddedFailedMessages = {

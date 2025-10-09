@@ -38,8 +38,20 @@ export const getAllIndividualSlots = async (req, res) => {
   return sendResponse(res, result);
 }
 export const getIndividualSlotsByDate = async (req, res) => {
-  const { date } = req.params; 
-   const result = await timeSlotService.getIndividualSlotsByDate(date);
+  const { date, courseId } = req.params;
+  const result = await timeSlotService.getIndividualSlotsByDate(date, courseId);
   return sendResponse(res, result);
 
+}
+
+export const getAllIndividualSlotsByTimeSlotId = async (req, res) => {
+  const { id } = req.params;
+  const result = await timeSlotService.getAllIndividualSlotsByTimeSlotId(id);
+  return sendResponse(res, result);
+}
+
+export const getAllIndividualSlotsByCourseId = async (req, res) => {
+  const { id } = req.params;
+  const result = await timeSlotService.getAllIndividualSlotsByCourseId(id);
+  return sendResponse(res, result);
 }

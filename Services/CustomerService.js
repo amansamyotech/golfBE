@@ -16,14 +16,12 @@ import { createResponse } from "../helper/responseHelper.js";
 // CREATE
 export const createCustomer = async (data) => {
   try {
-    // 1️⃣ Fetch the Membership Plan
     const plan = await MembershipPlanModel.findById(data.plan);
 
     if (!plan) {
       return createResponse(statusCodes.BAD_REQUEST, notFound.PLAN);
     }
 
-    // Calculate expiryDate
     const startDate = new Date(data.startDate);
     const expiryDate = new Date(startDate);
     expiryDate.setDate(expiryDate.getDate() + plan.numberOfDays - 1);
@@ -50,7 +48,8 @@ export const createCustomer = async (data) => {
 // GET
 export const getCustomer = async () => {
   try {
-    const customer = await CustomerModel.find().populate("plan", "title");
+    const customer = await CustomerModel.find()
+    .populate("plan", "title");
     return createResponse(statusCodes.OK, commonMessage.SUCCESS, customer);
   } catch (err) {
     return createResponse(

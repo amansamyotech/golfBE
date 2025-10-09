@@ -28,6 +28,7 @@ export const createBooking = async (data) => {
         phone: data.phone,
         gender: data.gender,
         govId: data.govId,
+        startDate: data.bookingDate,
       });
 
       const savedCustomer = await newCustomer.save();
@@ -97,10 +98,8 @@ export const updateGuestBooking = async (id, data) => {
       email: data.email,
       phone: data.phone,
       govId: data.govId,
+      startDate: data.bookingDate,
     };
-
-
-
 
     await CustomerModel.findByIdAndUpdate(booking.customerId, customerUpdate, { new: true });
 
@@ -137,7 +136,7 @@ export const updateGuestBooking = async (id, data) => {
     };
 
     const updatedBooking = await BookingModel.findByIdAndUpdate(id, bookingUpdate, { new: true });
-    
+
     return createResponse(
       statusCodes.OK,
       UpdatedsuccessMessages.GUEST || "Booking updated successfully",
@@ -325,6 +324,138 @@ export const updateBookingSlotById = async (bookingId, previousSlotId, newSlotId
     );
   }
 };
+
+export const cancelBookingSlotById = async (bookingId, slotId) => {
+  try {
+    if (!bookingId || !slotId) {
+      return createResponse(
+        statusCodes.REQIRED_ENTITY,
+        requiredMessage.SLOT || 'BookingId and Slot Id are required',
+      );
+    }
+
+    // Step 1: Update slot status to "available"
+    const slot = await IndividualSlotModel.findById(slotId);
+    if (!slot) {
+      return createResponse(
+        statusCodes.NOT_FOUND,
+        notFount.SLOT,
+      );
+    }
+
+    slot.status = "available";
+    slot.customerId = null;
+    await slot.save();
+
+    // Step 2: Remove slotId from booking.slotIds array
+    const booking = await BookingModel.findById(bookingId);
+   
+    if (!booking) {
+      return createResponse(
+        statusCodes.NOT_FOUND,
+        notFount.BOOKING,
+      );
+    }
+
+    booking.slotIds = booking.slotIds.filter(
+      (id) => id.toString() !== slotId.toString()
+    );
+
+
+    // Step 3: If bookingType is "daily"
+    if (booking.bookingType === "daily") {
+      booking.bookingStatus = "canceled";
+
+      // Step 3.1: Also update the related customer's status to "INACTIVE"
+      if (booking.customerId) {
+        await CustomerModel.findByIdAndUpdate(
+          booking.customerId,
+          { status: "INACTIVE" },
+          { new: true }
+        );
+      }
+    }
+    await booking.save();
+
+    return createResponse(
+      statusCodes.OK,
+      DeletedsuccessMessages.BOOKING,
+    );
+  } catch (err) {
+    console.error("Error in cancelBookingSlotById:", err);
+    return createResponse(
+      statusCodes.INTERNAL_SERVER_ERROR,
+      errorMessages.INTERNAL_SERVER_ERROR
+    );
+  }
+};
+
+export const cancelBookingOfGuest = async (bookingId, slotId) => {
+  try {
+    if (!bookingId || !slotId) {
+      return createResponse(
+        statusCodes.REQIRED_ENTITY,
+        requiredMessage.SLOT || 'BookingId and Slot Id are required',
+      );
+    }
+
+    // Step 1: Update slot status to "available"
+    const slot = await IndividualSlotModel.findById(slotId);
+    if (!slot) {
+      return createResponse(
+        statusCodes.NOT_FOUND,
+        notFount.SLOT,
+      );
+    }
+
+    slot.status = "available";
+    slot.customerId = null;
+    await slot.save();
+
+
+    const booking = await BookingModel.findById(bookingId);
+    if (!booking) {
+      return createResponse(
+        statusCodes.NOT_FOUND,
+        notFount.BOOKING,
+      );
+    }
+
+
+
+    // Step 2: Remove slotId from booking.slotIds and update status
+    await BookingModel.findByIdAndUpdate(
+      bookingId,
+      {
+        $pull: { slotIds: slotId },
+        isDeleted: true,
+        bookingStatus: "canceled"
+      },
+      { new: true }
+    );
+
+    // Step 3: Update customer status to INACTIVE
+    await CustomerModel.findByIdAndUpdate(
+      booking.customerId,
+      { status: "INACTIVE" },
+      { new: true }
+    );
+
+    return createResponse(
+      statusCodes.OK,
+      DeletedsuccessMessages.BOOKING,
+    );
+  } catch (err) {
+    console.error("Error in  cancel booking of guest :", err);
+    return createResponse(
+      statusCodes.INTERNAL_SERVER_ERROR,
+      errorMessages.INTERNAL_SERVER_ERROR
+    );
+  }
+};
+
+
+
 
 
 

@@ -6,13 +6,13 @@ const customerSchema = new mongoose.Schema(
     name: { type: String, required: true },
     email: { type: String },
     phone: { type: String },
-    dob: { type: Date }, // Member only
+    dob: { type: Date }, 
     gender: { type: String, enum: ["male", "female", "other"] },
-    govId: { type: String }, // Guest only
-    plan: { type: mongoose.Schema.Types.ObjectId, ref: "MembershipPlan" }, // Member only
+    govId: { type: String }, 
+    plan: { type: mongoose.Schema.Types.ObjectId, ref: "MembershipPlan" }, 
     startDate: { type: Date },
     expiryDate: { type: Date },
-    profileType: { type: String, enum: ["regular", "vip", "junior", "senior"] }, // Member only
+    profileType: { type: String, enum: ["regular", "vip", "junior", "senior"] }, 
     preferredTeeTime: {
       type: String,
       enum: ["morning", "afternoon", "evening"],

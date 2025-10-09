@@ -47,3 +47,17 @@ export const updateBookingSlotById = async (req, res) => {
   return sendResponse(res, result);
 }
 
+export const cancelBookingSlotById = async (req, res) => {
+  const { bookingId } = req.params;
+  const { slotId } = req.body;
+  const result = await bookingService.cancelBookingSlotById(bookingId, slotId);
+  return sendResponse(res, result);
+}
+
+export const cancelBookingOfGuest = async (req, res) => {
+  const { bookingId } = req.params;
+  const { slotId } = req.body;
+  const result = await bookingService.cancelBookingOfGuest(bookingId, slotId);
+  return sendResponse(res, result);
+}
+

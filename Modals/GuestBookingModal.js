@@ -56,6 +56,10 @@ const guestBookingSchema = new mongoose.Schema(
       enum: ["daily", "weekly", "membership"],
       default: "daily",
     },
+    isDeleted: {
+      type: Boolean,
+      default: false, 
+    },
   },
   { timestamps: true }
 );
