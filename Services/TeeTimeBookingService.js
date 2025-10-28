@@ -43,7 +43,7 @@ export const createBooking = async (data) => {
       // startTime: selectedSlot.start,
       // endTime: selectedSlot.end,
       groupSize: data.groupSize,
-      caddyCart: data.caddyCart,
+      caddyCart: data.isCaddy,
       acceptRules: data.acceptRules,
       acknowledgePolicy: data.acknowledgePolicy,
       specialInfo: data.specialInfo || "",

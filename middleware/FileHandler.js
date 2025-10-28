@@ -34,7 +34,7 @@ const fileHandler = () => {
       file.mimetype === "image/png" ||
       file.mimetype === "text/csv" ||
       file.mimetype ===
-        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
     ) {
       cb(null, true);
     } else {
@@ -57,6 +57,9 @@ const fileHandler = () => {
     { name: "image", maxCount: 1 },
     { name: "govId", maxCount: 1 },
     { name: "staffProfileImg", maxCount: 1 },
+    { name: "profileImage", maxCount: 1 },
+    { name: "productImage", maxCount: 1 },
+
   ]);
   return upload;
 };

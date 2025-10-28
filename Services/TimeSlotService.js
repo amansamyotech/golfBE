@@ -14,7 +14,7 @@ import { createResponse } from "../helper/responseHelper.js";
 import moment from "moment";
 
 const generateSlots = (data) => {
-  const startDate = moment(data.start_date[0], "YYYY-MM-DD");
+  const startDate = moment(data.start_date, "YYYY-MM-DD");
 
   const totalSlotTime =
     Number(data.slot_time_hours || 0) * 60 +
@@ -77,13 +77,15 @@ export const createSlot = async (data) => {
     const totalSlotTime =
       Number(data.slot_time_hours || 0) * 60 +
       Number(data.slot_time_minutes || 0);
-
+      
     const newSlot = new TimeSlotModel({
-      start_date: data.start_date[0],
+      // start_date: data.start_date[0],
+      start_date: Array.isArray(data.start_date) ? data.start_date[0] : data.start_date,
       course: data.course,
       slot_time_hours: data.slot_time_hours,
       slot_time_minutes: data.slot_time_minutes,
-      total_slot_time: data.total_slot_time,
+      // total_slot_time: data.total_slot_time,
+      total_slot_time: totalSlotTime,
       buffer_time: data.buffer_time,
       weekday_opening_time: data.weekday_opening_time,
       weekday_closing_time: data.weekday_closing_time,
@@ -94,7 +96,7 @@ export const createSlot = async (data) => {
 
     const slots = generateSlots({
       ...data,
-      total_slot_time: data.totalSlotTime,
+      total_slot_time: totalSlotTime,
     });
 
     // await IndividualSlotModel.insertMany(slots);

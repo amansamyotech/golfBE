@@ -81,6 +81,10 @@ export const AddedsuccessMessages = {
   SLOT: "Time slot created successfully",
   CUSTOMER: "Customer created successfully",
   BOOKING: "Booking created successfully",
+  TOURNAMENT: "Tournament created successfully",
+  PLAYER: "Player created successfully",
+  PRODUCT_ADDED: "Product created successfully",
+  RENTAL: "Rental created successfully"
 };
 
 export const UpdatedsuccessMessages = {
@@ -91,6 +95,12 @@ export const UpdatedsuccessMessages = {
   EMPLOYEE: "Employee updated successfully",
   SLOT: "Time slot updated successfully",
   CUSTOMER: "Customer updated successfully",
+  TOURNAMENT: "Tournament updated successfully",
+  TOURNAMENTSTATUS: "Tournament status change successfully",
+  PLAYER: "Player updated successfully",
+  PRODUCT: "Product updated successfully",
+  STOCK_UPDATED: "Stock updated successfully",
+  RENTAL: "Rental updated successfully",
 };
 
 export const notFound = {
@@ -101,6 +111,9 @@ export const notFound = {
   EMPLOYEE: "Employee not found",
   SLOT: "Time slot not found",
   CUSTOMER: "Customer not found",
+  NOT_FOUND_PLAYER: "Player not found",
+  TOURNAMENT: "Tournament not found",
+  RENTAL: "Rental not found"
 };
 
 export const notFount = {
@@ -123,6 +136,9 @@ export const DeletedsuccessMessages = {
   SLOT: "Time slot deleted successfully",
   CUSTOMER: "Customer deleted successfully",
   BOOKING: "Booking Cancel successfully",
+  TOURNAMENT: "Tournament deleted successfully",
+  PLAYER: "Player deleted successfully",
+  PRODUCT: "Product deleted successfully"
 };
 
 export const AddedFailedMessages = {

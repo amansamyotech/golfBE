@@ -10,9 +10,12 @@ import memberRouter from "./Routes/MemberRoute.js";
 import guestRouter from "./Routes/GuestBookingRoute.js";
 import staffRouter from "./Routes/StaffRoute.js";
 import timeSlotRouter from "./Routes/TimeSlotRoute.js";
-
 import bookingRouter from "./Routes/TeeTimeBookingRoute.js";
 import customerRouter from "./Routes/CustomerRoute.js";
+import tournamentRouter from "./Routes/TournamentRoutes.js";
+import playerRouter from "./Routes/PlayerRoute.js";
+import productRouter from "./Routes/ProductRoute.js";
+import rentalRouter from "./Routes/RentalRoute.js";
 
 dotenv.config();
 connectDB();
@@ -36,6 +39,11 @@ app.use("/api/staff", staffRouter);
 app.use("/api/booking", bookingRouter);
 app.use("/api/time-slot", timeSlotRouter);
 app.use("/api/customer", customerRouter);
+
+app.use("/api/tournament", tournamentRouter);
+app.use("/api/player", playerRouter);
+app.use("/api/products", productRouter); 
+app.use("/api/rental", rentalRouter);
 
 // Start Server
 app.listen(PORT, () => {
