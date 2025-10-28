@@ -3,7 +3,6 @@ import express from "express";
 import dotenv from "dotenv";
 import cors from "cors";
 import connectDB from "./Config/database.js";
-
 import courseRouter from "./Routes/CourseRoute.js";
 import planRouter from "./Routes/MembershipPlanRoute.js";
 import memberRouter from "./Routes/MemberRoute.js";
@@ -21,7 +20,7 @@ dotenv.config();
 connectDB();
 
 const app = express();
-const PORT = process.env.PORT || 4000;
+const PORT = process.env.PORT || 4456;
 
 // Middlewares
 app.use(cors());
