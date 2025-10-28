@@ -22,6 +22,7 @@ connectDB();
 const app = express();
 const PORT = process.env.PORT || 4456;
 
+
 // Middlewares
 app.use(cors());
 app.use(express.json());
