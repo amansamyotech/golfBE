@@ -61,3 +61,10 @@ export const cancelBookingOfGuest = async (req, res) => {
   return sendResponse(res, result);
 }
 
+export const assignCaddyToBooking = async (req, res) => {
+  const  id  = req.params.id;
+  const { caddyId } = req.body;
+  const result = await bookingService.assignCaddyToBooking(id, caddyId);
+  return sendResponse(res, result);
+}
+

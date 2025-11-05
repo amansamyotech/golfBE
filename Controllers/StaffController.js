@@ -92,3 +92,17 @@ export const deleteStaffController = async (req, res) => {
   const result = await staffService.deleteEmployee(id);
   return sendResponse(res, result);
 };
+
+export const changeWorkingShiftStatus = async (req, res) => {
+  const { id } = req.params;
+  const { workShift } = req.body;
+  const result = await staffService.changeWorkingShiftStatus(id, workShift);
+  return sendResponse(res, result);
+}
+
+export const changeAvailabilityStatus = async (req, res) => {
+  const { id } = req.params;
+  const { availabilityStatus } = req.body;
+  const result = await staffService.changeAvailabilityStatus(id, availabilityStatus);
+  return sendResponse(res, result);
+}

@@ -15,6 +15,8 @@ import tournamentRouter from "./Routes/TournamentRoutes.js";
 import playerRouter from "./Routes/PlayerRoute.js";
 import productRouter from "./Routes/ProductRoute.js";
 import rentalRouter from "./Routes/RentalRoute.js";
+import authRouter from "./Routes/UserRoute.js";
+import paymentRouter from "./Routes/paymentRoute.js";
 
 dotenv.config();
 connectDB();
@@ -42,8 +44,11 @@ app.use("/api/customer", customerRouter);
 
 app.use("/api/tournament", tournamentRouter);
 app.use("/api/player", playerRouter);
-app.use("/api/products", productRouter); 
+app.use("/api/products", productRouter);
 app.use("/api/rental", rentalRouter);
+app.use("/api/auth", authRouter);
+
+app.use("/api/payment", paymentRouter);
 
 // Start Server
 app.listen(PORT, () => {

@@ -16,6 +16,17 @@ import { createResponse } from "../helper/responseHelper.js";
 // CREATE
 export const createCustomer = async (data) => {
   try {
+
+    const existingCustomer = await CustomerModel.findOne({ phone: data.phone });
+
+    if (existingCustomer) {
+      console.log("Existing customer found");
+      return createResponse(
+        statusCodes.CONFLICT,
+        "Phone number already exists. Please use a different phone number."
+      );
+    }
+
     const plan = await MembershipPlanModel.findById(data.plan);
 
     if (!plan) {
@@ -28,6 +39,7 @@ export const createCustomer = async (data) => {
 
     // Add expiryDate to data
     data.expiryDate = expiryDate;
+    data.totalAmount = plan.price;
 
     const newCustomer = new CustomerModel(data);
 
@@ -49,7 +61,8 @@ export const createCustomer = async (data) => {
 export const getCustomer = async () => {
   try {
     const customer = await CustomerModel.find()
-    .populate("plan", "title");
+      .populate("plan", "title");
+
     return createResponse(statusCodes.OK, commonMessage.SUCCESS, customer);
   } catch (err) {
     return createResponse(

@@ -9,7 +9,7 @@ const ProductSchema = new mongoose.Schema(
         },
         category: {
             type: String,
-            required: true, // e.g. "Balls", "Clubs", "Apparel", "Cart"
+            required: true,
         },
         price: {
             type: Number,
@@ -20,14 +20,25 @@ const ProductSchema = new mongoose.Schema(
             type: Number,
             default: 0,
         },
+        totalStock: {
+            type: Number,
+            required: true,
+            default: 0, // total purchased
+        },
+        rentedOut: {
+            type: Number,
+            default: 0,
+        },
         stock: {
             type: Number,
             required: true,
-            default: 0,
+            default: function () {
+                return this.totalStock;
+            },
         },
         rentalRate: {
             type: Number,
-            default: 0, // price per day/hour for rentals
+            default: 0,
         },
         productImage: {
             type: String,

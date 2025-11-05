@@ -9,6 +9,7 @@ import {
   updateBookingSlotById,
   cancelBookingSlotById,
   cancelBookingOfGuest,
+  assignCaddyToBooking
 } from "../Controllers/TeeTimeBookingController.js";
 import fileHandler from "../middleware/FileHandler.js";
 
@@ -22,6 +23,7 @@ bookingRouter.get("/:id", getBookingDataById);
 bookingRouter.put("/update-assign-slot/:bookingId", updateBookingSlotById);
 bookingRouter.put("/cancel-assign-slot/:bookingId", cancelBookingSlotById);
 bookingRouter.put("/cancel-booking-guest/:bookingId", cancelBookingOfGuest);
+bookingRouter.put("/assign-caddy/:id", assignCaddyToBooking);
 
 
 export default bookingRouter;

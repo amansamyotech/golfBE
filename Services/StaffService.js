@@ -95,3 +95,78 @@ export const deleteEmployee = async (id) => {
     );
   }
 };
+//STATUS CHANGE WORKING SHIFT
+export const changeWorkingShiftStatus = async (id, workShift) => {
+  try {
+    const employee = await employeeModel.findById(id);
+
+    if (!employee) {
+      return createResponse(
+        statusCodes.BAD_REQUEST,
+        'Employe Not Found'
+      );
+    }
+
+    const updatedShift = await employeeModel.findByIdAndUpdate(
+      id,
+      { workShift: workShift },
+      { new: true }
+    );
+
+    return createResponse(
+      statusCodes.OK,
+      UpdatedsuccessMessages.STAFF,
+      updatedShift
+    );
+
+  } catch (err) {
+    console.error("Error updating working shift status:", err);
+    return createResponse(
+      statusCodes.INTERNAL_SERVER_ERROR,
+      errorMessages.INTERNAL_SERVER_ERROR
+    );
+  }
+};
+
+// STATUS CHANGE AVAILABILITY STATUS
+export const changeAvailabilityStatus = async (id, availabilityStatus) => {
+  try {
+    const employee = await employeeModel.findById(id);
+
+    if (!employee) {
+      return createResponse(
+        statusCodes.BAD_REQUEST,
+        'Employee Not Found'
+      );
+    }
+
+    // Allowed status values:
+    const allowedStatuses = ["available", "assigned", "onleave", "inactive"];
+    if (!allowedStatuses.includes(availabilityStatus)) {
+      return createResponse(
+        statusCodes.BAD_REQUEST,
+        "Invalid Availability Status"
+      );
+    }
+
+    const updatedEmployee = await employeeModel.findByIdAndUpdate(
+      id,
+      { availabilityStatus: availabilityStatus },
+      { new: true }
+    );
+
+    return createResponse(
+      statusCodes.OK,
+      UpdatedsuccessMessages.STAFF,
+      updatedEmployee
+    );
+
+  } catch (err) {
+    console.error("Error updating availability status:", err);
+    return createResponse(
+      statusCodes.INTERNAL_SERVER_ERROR,
+      errorMessages.INTERNAL_SERVER_ERROR
+    );
+  }
+};
+

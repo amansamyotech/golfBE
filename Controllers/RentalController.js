@@ -21,6 +21,11 @@ export const updateRentalController = async (req, res) => {
     return sendResponse(res, result);
 };
 
+export const returnRentalController = async (req, res) => {
+    const result = await rentalServices.returnRental(req.params.id, req.body);
+    return sendResponse(res, result);
+};
+
 export const cancelRentalController = async (req, res) => {
     const result = await rentalServices.cancelRental(req.params.id);
     return sendResponse(res, result);

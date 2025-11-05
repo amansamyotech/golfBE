@@ -31,6 +31,7 @@ const employeeSchema = new mongoose.Schema(
     },
     department: {
       type: String,
+      enum: ["caddy", "management", "cleaning", "security", "reception"],
       require: true,
     },
     employmentType: {
@@ -47,6 +48,11 @@ const employeeSchema = new mongoose.Schema(
     salary: {
       type: Number,
       default: 0,
+    },
+    availabilityStatus: {
+      type: String,
+      enum: ["available", "assigned", "onleave", "inactive"],
+      default: "available",
     },
   },
   {

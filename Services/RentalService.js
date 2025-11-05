@@ -12,36 +12,37 @@ import {
 } from "../Core/messages.js";
 import { statusCodes } from "../Core/constant.js";
 import { createResponse } from "../helper/responseHelper.js";
+import rentalRouter from "../Routes/RentalRoute.js";
 
 export const createRental = async (data) => {
     try {
+
         const product = await ProductModel.findById(data.productId);
         if (!product) {
             return createResponse(statusCodes.NOT_FOUND, "Product not found");
         }
 
-        if (product.stock < data.quantity) {
+        const availableStock = product.totalStock - product.rentedOut;
+        if (availableStock < data.quantity) {
             return createResponse(statusCodes.BAD_REQUEST, "Insufficient stock for rental");
         }
 
-        // Reduce stock temporarily
-        product.stock -= data.quantity;
+        product.rentedOut += data.quantity;
+        product.stock = product.totalStock - product.rentedOut;
         await product.save();
-
-        // Calculate total amount
-        const totalAmount = product.rentalRate * data.quantity;
 
         const newRental = new RentalModel({
             ...data,
-            totalAmount,
+            totalAmount: data.totalAmount,
         });
-
         const saved = await newRental.save();
         return createResponse(statusCodes.CREATED, AddedsuccessMessages.RENTAL, saved);
-
     } catch (err) {
         console.error("Error creating rental:", err);
-        return createResponse(statusCodes.INTERNAL_SERVER_ERROR, errorMessages.INTERNAL_SERVER_ERROR);
+        return createResponse(
+            statusCodes.INTERNAL_SERVER_ERROR,
+            errorMessages.INTERNAL_SERVER_ERROR
+        );
     }
 };
 
@@ -76,28 +77,32 @@ export const getRentalById = async (id) => {
     }
 };
 
-export const updateRental = async (id, data) => {
+export const returnRental = async (id, data) => {
     try {
         const rental = await RentalModel.findById(id);
         if (!rental) {
             return createResponse(statusCodes.NOT_FOUND, notFound.RENTAL);
         }
 
-        if (data.status === "returned" && rental.status !== "returned") {
+        if (rental.status !== "returned") {
             const product = await ProductModel.findById(rental.productId);
             if (product) {
                 product.stock += rental.quantity;
+                product.rentedOut -= rental.quantity;
                 await product.save();
             }
         }
 
-        const updated = await RentalModel.findByIdAndUpdate(id, data, { new: true });
+        const updatedData = { ...data, status: "returned" };
+        const updated = await RentalModel.findByIdAndUpdate(id, updatedData, { new: true });
+
         return createResponse(statusCodes.OK, UpdatedsuccessMessages.RENTAL, updated);
     } catch (err) {
         console.error("Error updating rental:", err);
         return createResponse(statusCodes.INTERNAL_SERVER_ERROR, errorMessages.INTERNAL_SERVER_ERROR);
     }
 };
+
 
 export const cancelRental = async (id) => {
     try {
@@ -141,4 +146,86 @@ export const getRentalsByStatus = async (status) => {
         return createResponse(statusCodes.INTERNAL_SERVER_ERROR, errorMessages.INTERNAL_SERVER_ERROR);
     }
 };
+
+export const updateRental = async (id, data) => {
+    try {
+        const existing = await RentalModel.findById(id);
+        if (!existing) {
+            return createResponse(statusCodes.NOT_FOUND, "Rental not found");
+        }
+
+        const oldProduct = await ProductModel.findById(existing.productId);
+        if (!oldProduct) {
+            return createResponse(statusCodes.NOT_FOUND, "Product not found");
+        }
+
+        const newProduct = await ProductModel.findById(data.productId);
+        if (!newProduct) {
+            return createResponse(statusCodes.NOT_FOUND, "Product not found");
+        }
+
+        const oldQty = existing.quantity;
+        const newQty = data.quantity;
+
+        // ✅ Product changed
+        if (existing.productId.toString() !== data.productId.toString()) {
+
+            // Return old qty to previous product
+            oldProduct.rentedOut -= oldQty;
+            oldProduct.stock = oldProduct.totalStock - oldProduct.rentedOut;
+            await oldProduct.save();
+
+            // Check if new product has enough stock
+            const availableStock = newProduct.totalStock - newProduct.rentedOut;
+            if (availableStock < newQty) {
+                return createResponse(statusCodes.BAD_REQUEST, "Insufficient stock for new product");
+            }
+
+            // Deduct new qty
+            newProduct.rentedOut += newQty;
+            newProduct.stock = newProduct.totalStock - newProduct.rentedOut;
+            await newProduct.save();
+
+        } else {
+            // ✅ Same product, only quantity changed
+            const qtyDifference = newQty - oldQty;  // +increase, -decrease
+
+            if (qtyDifference > 0) {
+                // check stock for additional qty
+                const availableStock = oldProduct.totalStock - oldProduct.rentedOut;
+                if (availableStock < qtyDifference) {
+                    return createResponse(statusCodes.BAD_REQUEST, "Insufficient stock to increase quantity");
+                }
+                oldProduct.rentedOut += qtyDifference;
+            } else if (qtyDifference < 0) {
+                // reduce rentedOut for returned qty
+                oldProduct.rentedOut += qtyDifference;
+            }
+
+            oldProduct.stock = oldProduct.totalStock - oldProduct.rentedOut;
+            await oldProduct.save();
+        }
+
+        // ✅ Update rental entry
+        existing.productId = data.productId;
+        existing.customerId = data.customerId;
+        existing.quantity = newQty;
+        existing.rentedDate = data.rentedDate;
+        existing.returnDate = data.returnDate;
+        existing.totalAmount = data.totalAmount;
+        existing.notes = data.notes;
+        if (data.status) existing.status = data.status;
+
+        const updated = await existing.save();
+        return createResponse(statusCodes.OK, "Rental updated successfully", updated);
+
+    } catch (err) {
+        console.error("Error updating rental:", err);
+        return createResponse(statusCodes.INTERNAL_SERVER_ERROR, "Internal server error");
+    }
+};
+
+
+
+
 

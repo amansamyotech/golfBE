@@ -3,9 +3,9 @@ import * as productService from "../Services/ProductService.js";
 import { sendResponse } from "../helper/responseHelper.js";
 
 export const createProductController = async (req, res) => {
-    const { name, category, price, costPrice, stock, rentalRate, description } = req.body;
+    const { name, category, price, costPrice, totalStock, rentalRate, description } = req.body;
     const data = {
-        name, category, price, costPrice, stock, rentalRate, description
+        name, category, price, costPrice, totalStock, rentalRate, description
     }
 
     if (req.files && req.files.productImage && req.files.productImage[0]) {
@@ -27,9 +27,9 @@ export const getProductByIdController = async (req, res) => {
 
 export const updateProductController = async (req, res) => {
 
-    const { name, category, price, costPrice, stock, rentalRate, description } = req.body;
+    const { name, category, price, costPrice, totalStock, rentalRate, description } = req.body;
     const data = {
-        name, category, price, costPrice, stock, rentalRate, description
+        name, category, price, costPrice, totalStock, rentalRate, description
     }
 
     if (req.files && req.files.productImage && req.files.productImage[0]) {

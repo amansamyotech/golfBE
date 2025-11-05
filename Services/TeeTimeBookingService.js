@@ -14,6 +14,7 @@ import { statusCodes } from "../Core/constant.js";
 import { createResponse } from "../helper/responseHelper.js";
 import CustomerModel from "../Modals/CustomerModal.js";
 import mongoose from "mongoose";
+import employeeModel from "../Modals/StaffModal.js";
 
 export const createBooking = async (data) => {
   try {
@@ -21,6 +22,17 @@ export const createBooking = async (data) => {
 
     // Guest flow: Create customer if no customerId
     if (!customerId) {
+
+      const existingCustomer = await CustomerModel.findOne({ phone: data.phone });
+
+      if (existingCustomer) {
+        console.log("Existing customer found");
+        return createResponse(
+          statusCodes.CONFLICT,
+          "Phone number already exists. Please use a different phone number."
+        );
+      }
+
       const newCustomer = new CustomerModel({
         role: data.role,
         name: data.name,
@@ -29,6 +41,7 @@ export const createBooking = async (data) => {
         gender: data.gender,
         govId: data.govId,
         startDate: data.bookingDate,
+        totalAmount: data.amount || 0,
       });
 
       const savedCustomer = await newCustomer.save();
@@ -43,7 +56,7 @@ export const createBooking = async (data) => {
       // startTime: selectedSlot.start,
       // endTime: selectedSlot.end,
       groupSize: data.groupSize,
-      caddyCart: data.isCaddy,
+      caddyCart: data.caddyCart,
       acceptRules: data.acceptRules,
       acknowledgePolicy: data.acknowledgePolicy,
       specialInfo: data.specialInfo || "",
@@ -70,7 +83,8 @@ export const createBooking = async (data) => {
 export const getAllBookings = async () => {
   try {
     const bookings = await BookingModel.find()
-      .populate("customerId", "name role startDate expiryDate email phone govId")
+      // .populate("customerId", "name role startDate expiryDate email phone govId status")
+      .populate("customerId")
       .populate("course", "name")
       .populate("slotIds");
     return createResponse(statusCodes.OK, commonMessage.SUCCESS, bookings);
@@ -250,8 +264,9 @@ export const getBookingDataById = async (id) => {
   try {
     const booking = await BookingModel.findById(id)
       .populate("course", "name")
-      .populate("customerId", "name email phone status")
-      .populate("slotIds");
+      .populate("customerId")
+      .populate("slotIds")
+      .populate("caddyId", "name");
     if (!booking) {
       return createResponse(statusCodes.NOT_FOUND, notFount.BOOKING);
     }
@@ -349,7 +364,7 @@ export const cancelBookingSlotById = async (bookingId, slotId) => {
 
     // Step 2: Remove slotId from booking.slotIds array
     const booking = await BookingModel.findById(bookingId);
-   
+
     if (!booking) {
       return createResponse(
         statusCodes.NOT_FOUND,
@@ -453,6 +468,60 @@ export const cancelBookingOfGuest = async (bookingId, slotId) => {
     );
   }
 };
+
+export const assignCaddyToBooking = async (bookingId, caddyId) => {
+  try {
+    const booking = await BookingModel.findById(bookingId);
+    if (!booking) {
+      return createResponse(
+        statusCodes.BAD_REQUEST,
+        "Booking not found"
+      );
+    }
+
+    const caddy = await employeeModel.findOne({
+      _id: caddyId,
+    });
+
+    if (!caddy) {
+      return createResponse(
+        statusCodes.BAD_REQUEST,
+        "Caddy not found"
+      );
+    }
+
+    const updatedBooking = await BookingModel.findByIdAndUpdate(
+      bookingId,
+      { caddyId },
+      { new: true }
+    );
+
+    await employeeModel.findByIdAndUpdate(
+      caddyId,
+      { availabilityStatus: "assigned" }
+    );
+
+    return createResponse(
+      statusCodes.CREATED,
+      "Caddy assigned successfully",
+      updatedBooking
+    );
+
+  } catch (err) {
+    console.error("Error assigning caddy:", err);
+    return createResponse(
+      statusCodes.INTERNAL_SERVER_ERROR,
+      errorMessages.INTERNAL_SERVER_ERROR
+    );
+  }
+};
+
+
+
+
+
+
+
 
 
 

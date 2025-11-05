@@ -12,6 +12,10 @@ const guestBookingSchema = new mongoose.Schema(
       ref: "Course",
       required: true,
     },
+    caddyId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "employee",
+    },
     slotIds: [
       {
         type: mongoose.Schema.Types.ObjectId,
@@ -40,12 +44,6 @@ const guestBookingSchema = new mongoose.Schema(
     specialInfo: {
       type: String,
     },
-    paymentMode: {
-      type: String,
-    },
-    amount: {
-      type: Number,
-    },
     bookingStatus: {
       type: String,
       enum: ["pending", "confirmed", "completed", "canceled"],
@@ -58,7 +56,7 @@ const guestBookingSchema = new mongoose.Schema(
     },
     isDeleted: {
       type: Boolean,
-      default: false, 
+      default: false,
     },
   },
   { timestamps: true }
