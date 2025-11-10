@@ -31,13 +31,13 @@ export const sendResponse = async (res, jsonData) => {
       return res.status(500).json(jsonData);
 
     case status === 404:
-      return res.status(200).json(jsonData);
+      return res.status(404).json(jsonData);
 
     case status === 409:
       return res.status(200).json(jsonData);
 
     case status === 401:
-      return res.status(200).json(jsonData);
+      return res.status(401).json(jsonData);
 
     case status === 400:
       return res.status(200).json(jsonData);
