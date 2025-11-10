@@ -41,6 +41,14 @@ const bookingSchema = new mongoose.Schema(
       required: true,
       default: "ACTIVE",
     },
+    totalAmount: {
+      type: Number,
+    },
+    paymentStatus: {
+      type: String,
+      enum: ["pending", "partial", "paid"],
+      default: "pending",
+    },
   },
   {
     timestamps: true,

@@ -35,7 +35,7 @@ export const loginUser = async (data) => {
 
         const token = generateToken(user);
         return createResponse(
-            statusCodes.OK,
+            statusCodes.CREATED,
             commonMessage.LOGIN_SUCCESS,
             user,
             token
@@ -47,3 +47,19 @@ export const loginUser = async (data) => {
         );
     }
 };
+
+export const getUserById = async (id) => {
+    try {
+        const user = await UserModel.findById(id);
+        if (!user) {
+            return createResponse(statusCodes.NOT_FOUND, 'User not found');
+        }
+        return createResponse(statusCodes.OK, commonMessage.SUCCESS, user);
+    } catch (err) {
+        return createResponse(
+            statusCodes.INTERNAL_SERVER_ERROR,
+            errorMessages.INTERNAL_SERVER_ERROR
+        );
+    }
+};
+

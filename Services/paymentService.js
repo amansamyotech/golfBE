@@ -31,14 +31,18 @@ export const createPayment = async (data) => {
             if (!booking) {
                 return createResponse(statusCodes.BAD_REQUEST, notFound.BOOKING);
             }
+
+            // if (customer.role === 'guest') {
+            // booking.bookingStatus = 'completed';
+            booking.paymentStatus = 'paid';
+            await booking.save();
+            // }
         }
 
 
         const newPayment = new PaymentModel(data);
         const saved = await newPayment.save();
 
-        customer.paymentStatus = "paid";
-        await customer.save();
 
         return createResponse(
             statusCodes.CREATED,

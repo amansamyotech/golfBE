@@ -54,6 +54,17 @@ const guestBookingSchema = new mongoose.Schema(
       enum: ["daily", "weekly", "membership"],
       default: "daily",
     },
+
+    totalAmount: {
+      type: Number,
+    },
+
+    paymentStatus: {
+      type: String,
+      enum: ["pending", "partial", "paid"],
+      default: "pending",
+    },
+
     isDeleted: {
       type: Boolean,
       default: false,

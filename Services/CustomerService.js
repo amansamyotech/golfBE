@@ -39,7 +39,7 @@ export const createCustomer = async (data) => {
 
     // Add expiryDate to data
     data.expiryDate = expiryDate;
-    data.totalAmount = plan.price;
+    // data.totalAmount = plan.price;
 
     const newCustomer = new CustomerModel(data);
 

@@ -226,6 +226,43 @@ export const updateRental = async (id, data) => {
 };
 
 
+export const createPaymentForRental = async (id, data) => {
+
+    try {
+        const rental = await RentalModel.findById(id);
+        if (!rental) {
+            return createResponse(
+                statusCodes.NOT_FOUND,
+                "Rental record not found."
+            );
+        }
+
+        const result = await RentalModel.findByIdAndUpdate(id, data, {
+            new: true,
+        });
+
+        result.paymentStatus = 'paid';
+        await result.save();
+
+        return createResponse(statusCodes.CREATED, "Payment processed successfully.", result);
+    } catch (err) {
+        console.error("Error while making payment for rental:", err);
+        return createResponse(
+            statusCodes.INTERNAL_SERVER_ERROR,
+            errorMessages.INTERNAL_SERVER_ERROR
+        );
+    }
+};
+
+
+
+
+
+
+
+
+
+
 
 
 

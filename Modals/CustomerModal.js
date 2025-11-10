@@ -20,15 +20,15 @@ const customerSchema = new mongoose.Schema(
     status: { type: String, enum: ["ACTIVE", "INACTIVE"], default: "INACTIVE" },
 
     //---- for payment tracking member ----//
-    totalAmount: {
-      type: Number,
-    },
+    // totalAmount: {
+    //   type: Number,
+    // },
 
-    paymentStatus: {
-      type: String,
-      enum: ["pending", "partial", "paid"],
-      default: "pending",
-    },
+    // paymentStatus: {
+    //   type: String,
+    //   enum: ["pending", "partial", "paid"],
+    //   default: "pending",
+    // },
 
   },
   { timestamps: true }

@@ -15,6 +15,7 @@ import { createResponse } from "../helper/responseHelper.js";
 import CustomerModel from "../Modals/CustomerModal.js";
 import mongoose from "mongoose";
 import employeeModel from "../Modals/StaffModal.js";
+import MembershipPlanModel from "../Modals/MembershipPlanModal.js";
 
 export const createBooking = async (data) => {
   try {
@@ -22,11 +23,9 @@ export const createBooking = async (data) => {
 
     // Guest flow: Create customer if no customerId
     if (!customerId) {
-
       const existingCustomer = await CustomerModel.findOne({ phone: data.phone });
 
       if (existingCustomer) {
-        console.log("Existing customer found");
         return createResponse(
           statusCodes.CONFLICT,
           "Phone number already exists. Please use a different phone number."
@@ -41,27 +40,36 @@ export const createBooking = async (data) => {
         gender: data.gender,
         govId: data.govId,
         startDate: data.bookingDate,
-        totalAmount: data.amount || 0,
       });
 
       const savedCustomer = await newCustomer.save();
       customerId = savedCustomer._id;
     }
 
+
+    // Get totalAmount
+    let totalAmount = 0;
+
+    const customer = await CustomerModel.findById(customerId);
+
+    if (customer?.role === 'member') {
+      const plan = await MembershipPlanModel.findById(customer.plan);
+      totalAmount = plan.price;
+    } else {
+      totalAmount = data.amount || 0;
+    }
+
     // Step 1: Create booking
     const newBooking = new BookingModel({
       customerId: customerId,
       course: data.course,
-      // slotId: selectedSlot._id,
-      // startTime: selectedSlot.start,
-      // endTime: selectedSlot.end,
       groupSize: data.groupSize,
       caddyCart: data.caddyCart,
       acceptRules: data.acceptRules,
       acknowledgePolicy: data.acknowledgePolicy,
       specialInfo: data.specialInfo || "",
       paymentMode: data.paymentMode || "",
-      amount: data.amount || 0,
+      totalAmount: totalAmount,
     });
 
     const savedBooking = await newBooking.save();
@@ -83,7 +91,6 @@ export const createBooking = async (data) => {
 export const getAllBookings = async () => {
   try {
     const bookings = await BookingModel.find()
-      // .populate("customerId", "name role startDate expiryDate email phone govId status")
       .populate("customerId")
       .populate("course", "name")
       .populate("slotIds");
@@ -264,7 +271,13 @@ export const getBookingDataById = async (id) => {
   try {
     const booking = await BookingModel.findById(id)
       .populate("course", "name")
-      .populate("customerId")
+      // .populate("customerId")
+      .populate({
+        path: "customerId",
+        populate: [
+          { path: "plan", model: "MembershipPlan" }
+        ]
+      })
       .populate("slotIds")
       .populate("caddyId", "name");
     if (!booking) {

@@ -17,6 +17,7 @@ import productRouter from "./Routes/ProductRoute.js";
 import rentalRouter from "./Routes/RentalRoute.js";
 import authRouter from "./Routes/UserRoute.js";
 import paymentRouter from "./Routes/paymentRoute.js";
+import reportRouter from "./Routes/ReportRoute.js";
 
 dotenv.config();
 connectDB();
@@ -49,6 +50,7 @@ app.use("/api/rental", rentalRouter);
 app.use("/api/auth", authRouter);
 
 app.use("/api/payment", paymentRouter);
+app.use("/api/reports", reportRouter);
 
 // Start Server
 app.listen(PORT, () => {

@@ -35,3 +35,13 @@ export const getRentalsByStatusController = async (req, res) => {
     const result = await rentalServices.getRentalsByStatus(req.params.status);
     return sendResponse(res, result);
 };
+
+export const makePaymentForRentalController = async (req, res) => {
+    const rentalId = req.params.id;
+    const paymentData = req.body;
+
+    const result = await rentalServices.createPaymentForRental(rentalId, paymentData);
+    return sendResponse(res, result);
+};
+
+

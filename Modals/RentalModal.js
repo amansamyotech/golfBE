@@ -37,6 +37,20 @@ const RentalSchema = new mongoose.Schema(
             type: String,
             trim: true,
         },
+        paymentStatus: {
+            type: String,
+            enum: ["pending", "paid", "overdue"],
+            default: "pending",
+        },
+        paidAmount: {
+            type: Number,
+            default: 0,
+        },
+        discount: {
+            type: Number,
+            default: 0,
+        },
+        paymentMode: { type: String, enum: ["cash", "card", "online", "upi"]},
     },
     { timestamps: true }
 );

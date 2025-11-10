@@ -6,7 +6,8 @@ import {
     cancelRentalController,
     getRentalsByStatusController,
     returnRentalController,
-    updateRentalController
+    updateRentalController,
+    makePaymentForRentalController
 } from "../Controllers/RentalController.js";
 
 const rentalRouter = express.Router();
@@ -18,5 +19,6 @@ rentalRouter.put("/return/:id", returnRentalController);
 rentalRouter.put("/cancel/:id", cancelRentalController);
 rentalRouter.get("/status/:status", getRentalsByStatusController);
 rentalRouter.put("/update/:id", updateRentalController);
+rentalRouter.put("/make-payment/:id", makePaymentForRentalController);
 
 export default rentalRouter;
