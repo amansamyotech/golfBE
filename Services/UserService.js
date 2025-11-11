@@ -63,3 +63,25 @@ export const getUserById = async (id) => {
     }
 };
 
+export const editUserProfileData = async (id, data) => {
+    try {
+        const user = await UserModel.findById(id);
+        if (!user) {
+            return createResponse(statusCodes.NOT_FOUND, 'User not found');
+        }
+
+        const updatedUser = await UserModel.findByIdAndUpdate(id, data, {
+            new: true,
+        });
+
+        return createResponse(statusCodes.OK, 'Profile Data Updated Successfully', updatedUser);
+    } catch (err) {
+        console.error("Error updating user profile:", err);
+        return createResponse(
+            statusCodes.INTERNAL_SERVER_ERROR,
+            errorMessages.INTERNAL_SERVER_ERROR
+        );
+    }
+};
+
+

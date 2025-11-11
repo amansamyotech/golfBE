@@ -11,3 +11,9 @@ export const getUserByIdcontroller = async (req, res) => {
     const result = await authServices.getUserById(id);
     return sendResponse(res, result);
 }
+
+export const editUserProfileController = async (req, res) => {
+    const id = req.params.id;
+    const result = await authServices.editUserProfileData(id, req.body);
+    return sendResponse(res, result);
+}
