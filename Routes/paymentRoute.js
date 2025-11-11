@@ -6,8 +6,12 @@ import {
     updatePaymentController,
     deletePaymentController
 } from "../Controllers/paymentController.js";
+import { verifyToken } from "../helper/Auth.js";
 
 const paymentRouter = express.Router();
+
+paymentRouter.use(verifyToken);
+
 paymentRouter.post("/create", createPaymentController);
 paymentRouter.get("/get-all", getPaymentsController);
 paymentRouter.get("/:id", getPaymentByIdController);

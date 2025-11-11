@@ -7,8 +7,11 @@ import {
   updatePlanController,
   deletePlanController,
 } from "../Controllers/MembershipPlanController.js";
+import { verifyToken } from "../helper/Auth.js";
 
 const planRouter = express.Router();
+
+planRouter.use(verifyToken);
 
 // planRouter.post("/create", fileHandler(), createPlanController);
 planRouter.post("/create", createPlanController);

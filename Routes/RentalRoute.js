@@ -9,8 +9,11 @@ import {
     updateRentalController,
     makePaymentForRentalController
 } from "../Controllers/RentalController.js";
+import { verifyToken } from "../helper/Auth.js";
 
 const rentalRouter = express.Router();
+
+rentalRouter.use(verifyToken);
 
 rentalRouter.post("/create", createRentalController);
 rentalRouter.get("/get-all", getAllRentalsController);

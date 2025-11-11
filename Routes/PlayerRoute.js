@@ -8,8 +8,11 @@ import {
     getPlayerByNumberController,
 } from '../Controllers/PlayerController.js';
 import fileHandler from '../middleware/FileHandler.js';
+import { verifyToken } from '../helper/Auth.js';
 
 const playerRouter = express.Router();
+
+playerRouter.use(verifyToken);
 
 playerRouter.post('/create', fileHandler(), createPlayerController);
 playerRouter.get('/get-all', getAllPlayersController);

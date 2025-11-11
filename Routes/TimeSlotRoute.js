@@ -10,8 +10,11 @@ import {
   getAllIndividualSlotsByTimeSlotId,
   getAllIndividualSlotsByCourseId
 } from "../Controllers/TimeSlotController.js";
+import { verifyToken } from "../helper/Auth.js";
 
 const timeSlotRouter = express.Router();
+
+timeSlotRouter.use(verifyToken);
 
 timeSlotRouter.post("/create", createTimeSlotController);
 timeSlotRouter.get("/get-all", getAllTimeSlotsController);

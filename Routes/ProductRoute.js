@@ -8,8 +8,11 @@ import {
     deleteProductController,
 } from "../Controllers/ProductController.js";
 import fileHandler from "../middleware/FileHandler.js";
+import { verifyToken } from "../helper/Auth.js";
 
 const productRouter = express.Router();
+
+productRouter.use(verifyToken);
 
 productRouter.post("/create", fileHandler(), createProductController);
 productRouter.get("/", getAllProductsController);

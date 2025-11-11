@@ -12,8 +12,12 @@ import {
   assignCaddyToBooking
 } from "../Controllers/TeeTimeBookingController.js";
 import fileHandler from "../middleware/FileHandler.js";
+import { verifyToken } from "../helper/Auth.js";
 
 const bookingRouter = express.Router();
+
+bookingRouter.use(verifyToken);
+
 bookingRouter.post("/create", fileHandler(), createBookingController);
 bookingRouter.get("/get-all", getAllBookingController);
 bookingRouter.put("/update-guest/:id", fileHandler(), updateGuestBooking);

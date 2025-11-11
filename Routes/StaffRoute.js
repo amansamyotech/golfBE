@@ -9,8 +9,11 @@ import {
   changeAvailabilityStatus
 } from "../Controllers/StaffController.js";
 import fileHandler from "../middleware/FileHandler.js";
+import { verifyToken } from "../helper/Auth.js";
 
 const staffRouter = express.Router();
+
+staffRouter.use(verifyToken);
 
 staffRouter.post("/create", fileHandler(), createStaffController);
 staffRouter.get("/get-all", getAllStaffController);

@@ -8,8 +8,11 @@ import {
   assignPlayerToTheTournament,
   changeTournamentStatus,
 } from "../Controllers/TournamentController.js";
+import { verifyToken } from "../helper/Auth.js";
 
 const tournamentRouter = express.Router();
+
+tournamentRouter.use(verifyToken);
 
 tournamentRouter.post("/create", createTournamentController);
 tournamentRouter.get("/get-all", getAllTournamentsController);
