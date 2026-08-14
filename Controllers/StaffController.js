@@ -1,0 +1,125 @@
+import * as staffService from "../Services/StaffService.js";
+import { sendResponse } from "../helper/responseHelper.js";
+
+export const createStaffController = async (req, res) => {
+  const {
+    name,
+    email,
+    phone,
+    gender,
+    address,
+    jobTitle,
+    department,
+    employmentType,
+    dateOfJoining,
+    workShift,
+    salary,
+    password,
+    role,
+  } = req.body;
+
+  const data = {
+    name,
+    email,
+    phone,
+    gender,
+    address,
+    jobTitle,
+    department,
+    employmentType,
+    dateOfJoining,
+    workShift,
+    salary,
+    password,
+    role: role || "Staff",
+  };
+
+  if (req.files && req.files.staffProfileImg && req.files.staffProfileImg[0]) {
+    data.profileImg = `/images/${req.files.staffProfileImg[0].filename}`;
+  }
+
+  const result = await staffService.createEmployee(data);
+  return sendResponse(res, result);
+};
+
+export const getAllStaffController = async (req, res) => {
+  const result = await staffService.getAllEmployees();
+  return sendResponse(res, result);
+};
+
+export const getStaffByIdController = async (req, res) => {
+  const { id } = req.params;
+  const result = await staffService.getEmployeeById(id);
+  return sendResponse(res, result);
+};
+
+export const getStaffByEmailController = async (req, res) => {
+  const { email } = req.params;
+  const result = await staffService.getEmployeeByEmail(email);
+  return sendResponse(res, result);
+};
+
+export const updateStaffController = async (req, res) => {
+  const { id } = req.params;
+
+  const {
+    name,
+    email,
+    phone,
+    gender,
+    address,
+    jobTitle,
+    department,
+    employmentType,
+    dateOfJoining,
+    workShift,
+    salary,
+    password,
+    role,
+  } = req.body;
+
+  const data = {
+    name,
+    email,
+    phone,
+    gender,
+    address,
+    jobTitle,
+    department,
+    employmentType,
+    dateOfJoining,
+    workShift,
+    salary,
+    role,
+  };
+
+  if (password) {
+    data.password = password;
+  }
+
+  if (req.files && req.files.staffProfileImg && req.files.staffProfileImg[0]) {
+    data.profileImg = `/images/${req.files.staffProfileImg[0].filename}`;
+  }
+  const result = await staffService.updateEmployee(id, data);
+  return sendResponse(res, result);
+};
+
+export const deleteStaffController = async (req, res) => {
+  const { id } = req.params;
+  const result = await staffService.deleteEmployee(id);
+  return sendResponse(res, result);
+};
+
+export const changeWorkingShiftStatus = async (req, res) => {
+  const { id } = req.params;
+  const { workShift } = req.body;
+  const result = await staffService.changeWorkingShiftStatus(id, workShift);
+  return sendResponse(res, result);
+}
+
+export const changeAvailabilityStatus = async (req, res) => {
+  const { id } = req.params;
+  const { availabilityStatus } = req.body;
+  const result = await staffService.changeAvailabilityStatus(id, availabilityStatus);
+  return sendResponse(res, result);
+}
