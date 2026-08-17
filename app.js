@@ -18,6 +18,7 @@ import rentalRouter from "./Routes/RentalRoute.js";
 import authRouter from "./Routes/UserRoute.js";
 import paymentRouter from "./Routes/paymentRoute.js";
 import reportRouter from "./Routes/ReportRoute.js";
+import contactRouter from "./Routes/ContactEnquiryRoute.js";
 
 dotenv.config();
 connectDB();
@@ -51,6 +52,7 @@ app.use("/api/auth", authRouter);
 
 app.use("/api/payment", paymentRouter);
 app.use("/api/reports", reportRouter);
+app.use("/api/contact", contactRouter);
 
 // Start Server
 app.listen(PORT, () => {
