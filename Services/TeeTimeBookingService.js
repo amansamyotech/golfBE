@@ -104,59 +104,149 @@ export const getAllBookings = async () => {
 };
 
 export const updateGuestBooking = async (id, data) => {
-
-
   try {
     const booking = await BookingModel.findById(id);
     if (!booking) {
-      throw new Error("Booking not found");
+      return createResponse(
+        statusCodes.NOT_FOUND,
+        notFount.BOOKING || "Booking not found"
+      );
     }
 
+    const customer = await CustomerModel.findById(booking.customerId);
+    const isGuest = customer?.role === "guest";
 
-    // 1️⃣ Update customer info
-    const customerUpdate = {
-      name: data.name,
-      email: data.email,
-      phone: data.phone,
-      govId: data.govId,
-      startDate: data.bookingDate,
-    };
+    // Member booking update (tee-time form)
+    if (!isGuest) {
+      const bookingUpdate = {};
 
-    await CustomerModel.findByIdAndUpdate(booking.customerId, customerUpdate, { new: true });
+      if (data.course) {
+        bookingUpdate.course = new mongoose.Types.ObjectId(data.course);
+      }
+      if (data.customerId) {
+        bookingUpdate.customerId = new mongoose.Types.ObjectId(data.customerId);
+      }
+      if (data.caddyCart !== undefined) {
+        bookingUpdate.caddyCart =
+          data.caddyCart === true || data.caddyCart === "true";
+      }
+      if (data.specialInfo !== undefined) {
+        bookingUpdate.specialInfo = data.specialInfo;
+      }
+      if (data.groupSize !== undefined && data.groupSize !== null && data.groupSize !== "") {
+        bookingUpdate.groupSize = Number(data.groupSize);
+      }
 
-    // 2️⃣ Parse selected slot
-    let newSlot = {};
+      const updatedBooking = await BookingModel.findByIdAndUpdate(
+        id,
+        bookingUpdate,
+        { new: true }
+      );
+
+      return createResponse(
+        statusCodes.OK,
+        UpdatedsuccessMessages.GUEST || "Booking updated successfully",
+        updatedBooking
+      );
+    }
+
+    // Guest booking update
+    const customerUpdate = {};
+    if (data.name !== undefined) customerUpdate.name = data.name;
+    if (data.email !== undefined) customerUpdate.email = data.email;
+    if (data.phone !== undefined) customerUpdate.phone = data.phone;
+    if (data.govId !== undefined) customerUpdate.govId = data.govId;
+    if (data.bookingDate !== undefined) customerUpdate.startDate = data.bookingDate;
+
+    if (Object.keys(customerUpdate).length) {
+      await CustomerModel.findByIdAndUpdate(booking.customerId, customerUpdate, {
+        new: true,
+      });
+    }
+
+    let newSlot = null;
     if (data.selectedSlot) {
-      newSlot = typeof data.selectedSlot === "string"
-        ? JSON.parse(data.selectedSlot)
-        : data.selectedSlot;
+      newSlot =
+        typeof data.selectedSlot === "string"
+          ? JSON.parse(data.selectedSlot)
+          : data.selectedSlot;
     }
 
-    // 3️⃣ Update slot status if slot has changed
-    if (booking.slotId.toString() !== newSlot._id) {
-      // Make previous slot available
-      await IndividualSlotModel.findByIdAndUpdate(booking.slotId, { status: "available" });
+    if (newSlot?._id) {
+      const previousSlotId = booking.slotId || booking.slotIds?.[0];
+      if (previousSlotId && previousSlotId.toString() !== newSlot._id.toString()) {
+        await IndividualSlotModel.findByIdAndUpdate(previousSlotId, {
+          status: "available",
+        });
+        await IndividualSlotModel.findByIdAndUpdate(newSlot._id, {
+          status: "booked",
+        });
+      }
 
-      // Make new slot booked
-      await IndividualSlotModel.findByIdAndUpdate(newSlot._id, { status: "booked" });
+      const bookingUpdate = {
+        course: data.course
+          ? new mongoose.Types.ObjectId(data.course)
+          : booking.course,
+        startTime: newSlot.start,
+        endTime: newSlot.end,
+        groupSize:
+          data.groupSize !== undefined ? Number(data.groupSize) : booking.groupSize,
+        caddyCart:
+          data.caddyCart !== undefined
+            ? data.caddyCart === true || data.caddyCart === "true"
+            : booking.caddyCart,
+        acceptRules:
+          data.acceptRules !== undefined
+            ? data.acceptRules
+            : booking.acceptRules,
+        acknowledgePolicy:
+          data.acknowledgePolicy !== undefined
+            ? data.acknowledgePolicy
+            : booking.acknowledgePolicy,
+        specialInfo:
+          data.specialInfo !== undefined ? data.specialInfo : booking.specialInfo,
+        paymentMode:
+          data.paymentMode !== undefined ? data.paymentMode : booking.paymentMode,
+        amount:
+          data.amount !== undefined ? Number(data.amount) : booking.amount,
+        slotIds: [new mongoose.Types.ObjectId(newSlot._id)],
+      };
+
+      const updatedBooking = await BookingModel.findByIdAndUpdate(
+        id,
+        bookingUpdate,
+        { new: true }
+      );
+
+      return createResponse(
+        statusCodes.OK,
+        UpdatedsuccessMessages.GUEST || "Booking updated successfully",
+        updatedBooking
+      );
     }
 
-    // 4️⃣ Update booking info
     const bookingUpdate = {
-      course: new mongoose.Types.ObjectId(data.course),
-      slotId: new mongoose.Types.ObjectId(newSlot._id),
-      startTime: newSlot.start,
-      endTime: newSlot.end,
-      groupSize: Number(data.groupSize),
-      caddyCart: data.caddyCart,
-      acceptRules: data.acceptRules,
-      acknowledgePolicy: data.acknowledgePolicy,
-      specialInfo: data.specialInfo,
-      paymentMode: data.paymentMode,
-      amount: Number(data.amount),
+      course: data.course
+        ? new mongoose.Types.ObjectId(data.course)
+        : booking.course,
+      groupSize:
+        data.groupSize !== undefined ? Number(data.groupSize) : booking.groupSize,
+      caddyCart:
+        data.caddyCart !== undefined
+          ? data.caddyCart === true || data.caddyCart === "true"
+          : booking.caddyCart,
+      specialInfo:
+        data.specialInfo !== undefined ? data.specialInfo : booking.specialInfo,
+      paymentMode:
+        data.paymentMode !== undefined ? data.paymentMode : booking.paymentMode,
+      amount: data.amount !== undefined ? Number(data.amount) : booking.amount,
     };
 
-    const updatedBooking = await BookingModel.findByIdAndUpdate(id, bookingUpdate, { new: true });
+    const updatedBooking = await BookingModel.findByIdAndUpdate(
+      id,
+      bookingUpdate,
+      { new: true }
+    );
 
     return createResponse(
       statusCodes.OK,
@@ -177,29 +267,40 @@ export const cancelGuestBooking = async (id) => {
     const booking = await BookingModel.findById(id);
 
     if (!booking) {
-      return { success: false, message: "Booking not found" };
+      return createResponse(
+        statusCodes.NOT_FOUND,
+        notFount.BOOKING || "Booking not found"
+      );
+    }
+
+    if (booking.slotIds?.length) {
+      await IndividualSlotModel.updateMany(
+        { _id: { $in: booking.slotIds } },
+        { status: "available" }
+      );
+    } else if (booking.slotId) {
+      await IndividualSlotModel.findByIdAndUpdate(booking.slotId, {
+        status: "available",
+      });
     }
 
     await BookingModel.findByIdAndDelete(id);
 
-    await CustomerModel.findByIdAndUpdate(
-      booking.customerId,
-      { status: "INACTIVE" },
-      { new: true }
-    );
-
-    await IndividualSlotModel.findByIdAndUpdate(
-      booking.slotId,
-      { status: "available" },
-      { new: true }
-    );
+    const customer = await CustomerModel.findById(booking.customerId);
+    if (customer?.role === "guest") {
+      await CustomerModel.findByIdAndUpdate(
+        booking.customerId,
+        { status: "INACTIVE" },
+        { new: true }
+      );
+    }
 
     return createResponse(
       statusCodes.OK,
-      DeletedsuccessMessages.GUEST || "Booking cancelled successfully",
+      DeletedsuccessMessages.GUEST || "Booking cancelled successfully"
     );
   } catch (err) {
-    console.error("Error creating booking:", err);
+    console.error("Error cancelling booking:", err);
     return createResponse(
       statusCodes.INTERNAL_SERVER_ERROR,
       errorMessages.INTERNAL_SERVER_ERROR
@@ -522,6 +623,45 @@ export const assignCaddyToBooking = async (bookingId, caddyId) => {
 
   } catch (err) {
     console.error("Error assigning caddy:", err);
+    return createResponse(
+      statusCodes.INTERNAL_SERVER_ERROR,
+      errorMessages.INTERNAL_SERVER_ERROR
+    );
+  }
+};
+
+const ALLOWED_BOOKING_STATUSES = ["pending", "confirmed", "completed", "canceled"];
+
+export const updateBookingStatus = async (id, bookingStatus) => {
+  try {
+    if (!ALLOWED_BOOKING_STATUSES.includes(bookingStatus)) {
+      return createResponse(
+        statusCodes.BAD_REQ,
+        "Invalid booking status"
+      );
+    }
+
+    const booking = await BookingModel.findById(id);
+    if (!booking) {
+      return createResponse(
+        statusCodes.NOT_FOUND,
+        notFount.BOOKING || "Booking not found"
+      );
+    }
+
+    const updatedBooking = await BookingModel.findByIdAndUpdate(
+      id,
+      { bookingStatus },
+      { new: true }
+    );
+
+    return createResponse(
+      statusCodes.OK,
+      UpdatedsuccessMessages.GUEST || "Booking status updated successfully",
+      updatedBooking
+    );
+  } catch (err) {
+    console.error("Error updating booking status:", err);
     return createResponse(
       statusCodes.INTERNAL_SERVER_ERROR,
       errorMessages.INTERNAL_SERVER_ERROR

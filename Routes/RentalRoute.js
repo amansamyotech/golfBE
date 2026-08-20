@@ -7,6 +7,7 @@ import {
     getRentalsByStatusController,
     returnRentalController,
     updateRentalController,
+    updateRentalStatusController,
     makePaymentForRentalController
 } from "../Controllers/RentalController.js";
 import { verifyToken, authorizeRoles, ROLES } from "../helper/Auth.js";
@@ -22,6 +23,7 @@ rentalRouter.get("/get/:id", getRentalByIdController);
 rentalRouter.put("/return/:id", returnRentalController);
 rentalRouter.put("/cancel/:id", cancelRentalController);
 rentalRouter.get("/status/:status", getRentalsByStatusController);
+rentalRouter.put("/update-status/:id", updateRentalStatusController);
 rentalRouter.put("/update/:id", updateRentalController);
 rentalRouter.put("/make-payment/:id", makePaymentForRentalController);
 

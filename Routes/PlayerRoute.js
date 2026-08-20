@@ -4,6 +4,7 @@ import {
     getAllPlayersController,
     getPlayerByIdController,
     updatePlayerController,
+    updatePlayerStatusController,
     deletePlayerController,
     getPlayerByNumberController,
 } from '../Controllers/PlayerController.js';
@@ -18,6 +19,7 @@ playerRouter.use(authorizeRoles(...ROLES.OPERATIONS));
 playerRouter.post('/create', fileHandler(), createPlayerController);
 playerRouter.get('/get-all', getAllPlayersController);
 playerRouter.get('/get/:id', getPlayerByIdController);
+playerRouter.put('/update-status/:id', updatePlayerStatusController);
 playerRouter.put('/update/:id', fileHandler(), updatePlayerController);
 playerRouter.delete('/delete/:id', deletePlayerController);
 playerRouter.get('/by-phone', getPlayerByNumberController);

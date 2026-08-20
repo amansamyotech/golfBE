@@ -21,7 +21,6 @@ import reportRouter from "./Routes/ReportRoute.js";
 import contactRouter from "./Routes/ContactEnquiryRoute.js";
 
 dotenv.config();
-connectDB();
 
 const app = express();
 const PORT = process.env.PORT || 4456;
@@ -55,6 +54,17 @@ app.use("/api/reports", reportRouter);
 app.use("/api/contact", contactRouter);
 
 // Start Server
-app.listen(PORT, () => {
-  console.log(`✅ Server is running at http://localhost:${PORT}`);
-});
+async function startApplication() {
+  try {
+    await connectDB();
+
+    app.listen(PORT, () => {
+      console.log(`✅ Server is running on port ${PORT}`);
+    });
+  } catch (error) {
+    console.error("[BOOT] Application did not start:", error.message);
+    process.exit(1);
+  }
+}
+
+startApplication();

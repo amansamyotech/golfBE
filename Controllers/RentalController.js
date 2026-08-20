@@ -36,6 +36,13 @@ export const getRentalsByStatusController = async (req, res) => {
     return sendResponse(res, result);
 };
 
+export const updateRentalStatusController = async (req, res) => {
+    const { id } = req.params;
+    const { status } = req.body;
+    const result = await rentalServices.updateRentalStatus(id, status);
+    return sendResponse(res, result);
+};
+
 export const makePaymentForRentalController = async (req, res) => {
     const rentalId = req.params.id;
     const paymentData = req.body;

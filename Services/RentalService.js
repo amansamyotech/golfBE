@@ -147,6 +147,58 @@ export const getRentalsByStatus = async (status) => {
     }
 };
 
+export const updateRentalStatus = async (id, status) => {
+    try {
+        const allowedStatuses = ["rented", "returned", "cancelled"];
+        if (!allowedStatuses.includes(status)) {
+            return createResponse(statusCodes.BAD_REQUEST, "Invalid rental status");
+        }
+
+        const rental = await RentalModel.findById(id);
+        if (!rental) {
+            return createResponse(statusCodes.NOT_FOUND, notFound.RENTAL);
+        }
+
+        const previousStatus = rental.status;
+        if (previousStatus === status) {
+            return createResponse(statusCodes.OK, UpdatedsuccessMessages.RENTAL, rental);
+        }
+
+        const product = await ProductModel.findById(rental.productId);
+
+        // Leaving rented → restore inventory
+        if (previousStatus === "rented" && (status === "returned" || status === "cancelled")) {
+            if (product) {
+                product.rentedOut = Math.max(0, (product.rentedOut || 0) - rental.quantity);
+                product.stock = product.totalStock - product.rentedOut;
+                await product.save();
+            }
+        }
+
+        // Re-opening to rented → deduct inventory again
+        if (previousStatus !== "rented" && status === "rented") {
+            if (!product) {
+                return createResponse(statusCodes.NOT_FOUND, "Product not found");
+            }
+            const availableStock = product.totalStock - product.rentedOut;
+            if (availableStock < rental.quantity) {
+                return createResponse(statusCodes.BAD_REQUEST, "Insufficient stock for rental");
+            }
+            product.rentedOut += rental.quantity;
+            product.stock = product.totalStock - product.rentedOut;
+            await product.save();
+        }
+
+        rental.status = status;
+        await rental.save();
+
+        return createResponse(statusCodes.OK, UpdatedsuccessMessages.RENTAL, rental);
+    } catch (err) {
+        console.error("Error updating rental status:", err);
+        return createResponse(statusCodes.INTERNAL_SERVER_ERROR, errorMessages.INTERNAL_SERVER_ERROR);
+    }
+};
+
 export const updateRental = async (id, data) => {
     try {
         const existing = await RentalModel.findById(id);

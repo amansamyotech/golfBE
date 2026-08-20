@@ -158,3 +158,37 @@ export const getPlayerByNumber = async (phone) => {
     }
 };
 
+export const updatePlayerStatus = async (id, status) => {
+    try {
+        const allowedStatuses = ["registered", "enrolled", "active", "inactive"];
+        if (!allowedStatuses.includes(status)) {
+            return createResponse(statusCodes.BAD_REQUEST, "Invalid player status");
+        }
+
+        const updated = await PlayerModel.findByIdAndUpdate(
+            id,
+            { status },
+            { new: true }
+        );
+
+        if (!updated) {
+            return createResponse(
+                statusCodes.BAD_REQUEST,
+                errorMessages.NOT_FOUND_PLAYER
+            );
+        }
+
+        return createResponse(
+            statusCodes.OK,
+            UpdatedsuccessMessages.PLAYER,
+            updated
+        );
+    } catch (err) {
+        console.error("Error updating player status:", err);
+        return createResponse(
+            statusCodes.INTERNAL_SERVER_ERROR,
+            errorMessages.INTERNAL_SERVER_ERROR
+        );
+    }
+};
+

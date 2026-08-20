@@ -72,3 +72,10 @@ export const getPlayerByNumberController = async (req, res) => {
     return sendResponse(res, result);
 }
 
+export const updatePlayerStatusController = async (req, res) => {
+    const { id } = req.params;
+    const { status } = req.body;
+    const result = await playerService.updatePlayerStatus(id, status);
+    return sendResponse(res, result);
+}
+

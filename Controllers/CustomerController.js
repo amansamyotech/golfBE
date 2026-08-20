@@ -51,6 +51,17 @@ export const updateCustomerController = async (req, res) => {
   }
 };
 
+export const updateCustomerStatusController = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { status } = req.body;
+    const result = await customerService.updateCustomerStatus(id, status);
+    return sendResponse(res, result);
+  } catch (error) {
+    return sendResponse(res, { success: false, message: error.message });
+  }
+};
+
 // Delete a customer by ID
 export const deleteCustomerController = async (req, res) => {
   try {

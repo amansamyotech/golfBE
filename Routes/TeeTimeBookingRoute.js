@@ -9,7 +9,8 @@ import {
   updateBookingSlotById,
   cancelBookingSlotById,
   cancelBookingOfGuest,
-  assignCaddyToBooking
+  assignCaddyToBooking,
+  updateBookingStatusController,
 } from "../Controllers/TeeTimeBookingController.js";
 import fileHandler from "../middleware/FileHandler.js";
 import { verifyToken, authorizeRoles, ROLES } from "../helper/Auth.js";
@@ -24,6 +25,7 @@ bookingRouter.get("/get-all", getAllBookingController);
 bookingRouter.put("/update-guest/:id", fileHandler(), updateGuestBooking);
 bookingRouter.delete("/cancel-guest/:id", cancelGuestBooking);
 bookingRouter.post("/assign-slot/:id", assignSlotController);
+bookingRouter.put("/update-status/:id", updateBookingStatusController);
 bookingRouter.get("/:id", getBookingDataById);
 bookingRouter.put("/update-assign-slot/:bookingId", updateBookingSlotById);
 bookingRouter.put("/cancel-assign-slot/:bookingId", cancelBookingSlotById);

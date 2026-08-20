@@ -118,53 +118,55 @@ export const updateCustomer = async (id, data) => {
   try {
     let updatedData = { ...data };
 
-    // Fetch existing customer to compare startDate and plan
     const existingCustomer = await CustomerModel.findById(id);
     if (!existingCustomer) {
       return createResponse(statusCodes.NOT_FOUND, notFound.CUSTOMER);
     }
 
-    // Compare existing and incoming startDate (ignoring time, only date)
-    const existingStartDate = existingCustomer.startDate
-      ? new Date(existingCustomer.startDate).toDateString()
-      : null;
-    const incomingStartDate = new Date(data.startDate).toDateString();
+    // Status-only (or partial) updates should not force expiry recalculation
+    if (data.startDate) {
+      const existingStartDate = existingCustomer.startDate
+        ? new Date(existingCustomer.startDate).toDateString()
+        : null;
+      const incomingStartDate = new Date(data.startDate).toDateString();
 
-    // Check if plan is provided and has changed
-    const isPlanProvided = data.plan !== undefined;
+      const isPlanProvided = data.plan !== undefined;
+      const existingPlanId = existingCustomer.plan
+        ? existingCustomer.plan.toString()
+        : null;
+      const incomingPlanId = isPlanProvided
+        ? data.plan.toString()
+        : existingPlanId;
 
-    const existingPlanId = existingCustomer.plan
-      ? existingCustomer.plan.toString()
-      : null;
+      if (
+        existingStartDate !== incomingStartDate ||
+        existingPlanId !== incomingPlanId
+      ) {
+        const planId = isPlanProvided ? data.plan : existingCustomer.plan;
+        if (!planId) {
+          return createResponse(statusCodes.NOT_FOUND, notFound.MEMBERSHIP_PLAN);
+        }
 
-    const incomingPlanId = isPlanProvided
-      ? data.plan.toString()
-      : existingPlanId;
+        const plan = await MembershipPlanModel.findById(planId);
+        if (!plan) {
+          return createResponse(statusCodes.NOT_FOUND, notFound.MEMBERSHIP_PLAN);
+        }
 
-    // Recalculate expiryDate if startDate or plan has changed
-    if (
-      existingStartDate !== incomingStartDate ||
-      existingPlanId !== incomingPlanId
-    ) {
-      // Use incoming plan if provided, otherwise use existing plan
-      const planId = isPlanProvided ? data.plan : existingCustomer.plan;
-      if (!planId) {
-        return createResponse(statusCodes.NOT_FOUND, notFound.MEMBERSHIP_PLAN);
+        const startDate = new Date(data.startDate);
+        const expiryDate = new Date(startDate);
+        expiryDate.setDate(startDate.getDate() + plan.numberOfDays);
+        updatedData.expiryDate = expiryDate;
       }
-
-      const plan = await MembershipPlanModel.findById(planId);
-      if (!plan) {
-        return createResponse(statusCodes.NOT_FOUND, notFound.MEMBERSHIP_PLAN);
-      }
-
-      // Calculate new expiry date based on numberOfDays
-      const startDate = new Date(data.startDate);
-      const expiryDate = new Date(startDate);
-      expiryDate.setDate(startDate.getDate() + plan.numberOfDays);
-      updatedData.expiryDate = expiryDate;
     }
 
-    // Update the customer with the modified data
+    if (data.status !== undefined) {
+      const normalized = String(data.status).toUpperCase();
+      if (!["ACTIVE", "INACTIVE"].includes(normalized)) {
+        return createResponse(statusCodes.BAD_REQ, "Invalid customer status");
+      }
+      updatedData.status = normalized;
+    }
+
     const updated = await CustomerModel.findByIdAndUpdate(id, updatedData, {
       new: true,
     });
@@ -176,6 +178,36 @@ export const updateCustomer = async (id, data) => {
     return createResponse(
       statusCodes.OK,
       UpdatedsuccessMessages.CUSTOMER,
+      updated
+    );
+  } catch (err) {
+    return createResponse(
+      statusCodes.INTERNAL_SERVER_ERROR,
+      errorMessages.INTERNAL_SERVER_ERROR
+    );
+  }
+};
+
+export const updateCustomerStatus = async (id, status) => {
+  try {
+    const normalized = String(status || "").toUpperCase();
+    if (!["ACTIVE", "INACTIVE"].includes(normalized)) {
+      return createResponse(statusCodes.BAD_REQ, "Invalid customer status");
+    }
+
+    const updated = await CustomerModel.findByIdAndUpdate(
+      id,
+      { status: normalized },
+      { new: true }
+    );
+
+    if (!updated) {
+      return createResponse(statusCodes.NOT_FOUND, notFound.CUSTOMER);
+    }
+
+    return createResponse(
+      statusCodes.OK,
+      UpdatedsuccessMessages.CUSTOMER || "Status updated successfully",
       updated
     );
   } catch (err) {

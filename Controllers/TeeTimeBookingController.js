@@ -68,3 +68,10 @@ export const assignCaddyToBooking = async (req, res) => {
   return sendResponse(res, result);
 }
 
+export const updateBookingStatusController = async (req, res) => {
+  const { id } = req.params;
+  const { bookingStatus } = req.body;
+  const result = await bookingService.updateBookingStatus(id, bookingStatus);
+  return sendResponse(res, result);
+};
+
